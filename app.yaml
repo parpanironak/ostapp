@@ -1,4 +1,4 @@
-application: ostapp
+application: northern-shield-780
 version: 1
 runtime: python27
 api_version: 1
@@ -6,11 +6,14 @@ threadsafe: yes
 
 # [START handlers]
 handlers:
-- url: /images
-  static_dir: images
+- url: /img
+  static_dir: img
   
-- url: /style
-  static_dir: style
+- url: /css
+  static_dir: css
+  
+- url: /js
+  static_dir: js
   
 - url: /.*
   script: main.app

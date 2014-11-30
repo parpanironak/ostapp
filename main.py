@@ -16,7 +16,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-def creator_key(creator_ID):
+"""def creator_key(creator_ID):
     return ndb.Key('Creator',creator_ID)
 
 def question_key(question_ID):
@@ -30,7 +30,9 @@ def avote_key(avote_ID):
 
 def qvote_key(qvote_ID):
     return ndb.Key('QVOte',qvote_ID)
+"""
 
+"""
 class Question(ndb.model):
     creator = ndb.StringProperty(indexed=True)
     qtitle = ndb.StringProperty(indexed=True)
@@ -50,13 +52,11 @@ class Answer(ndb.Model):
     date = ndb.DateProperty(auto_now_add=True)
     time = ndb.TimeProperty(auto_now_add=True)
 
-
 class QVote(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
     qid = ndb.StringProperty(indexed=True)
     vote = ndb.BooleanProperty(indexed = False)
-    
-    
+      
 class AVote(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
     aid = ndb.StringProperty(indexed=True)
@@ -64,27 +64,29 @@ class AVote(ndb.Model):
 
 class Creator(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
-    
+    """
 
 class Main(webapp2.RedirectHandler):
     
     def get(self):
         user = users.get_current_user()
         
-        guest = None;
+        guest = None
         username = None
+        url = None
         if user:
             guest = False
             username = user.nickname()
         else:
             guest = True
             username = "guest"
-            
+            url = users.create_login_url("/")
         template_values = {
             'user' : username,
-            'guest' : guest
+            'guest' : guest,
+            'url' : url
         }
-        template = JINJA_ENVIRONMENT.get_template("temp.html")
+        template = JINJA_ENVIRONMENT.get_template("temp2.html")
         self.response.write(template.render(template_values))
 
 

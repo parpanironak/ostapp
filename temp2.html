@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/bootstrap.css"/>
+<link rel="stylesheet" href="css/bootstrap-responsive.css" />
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="js/bootstrap.js"></script>
+
+<style type="text/css">
+	.nav-menu
+	{
+		list-style:none;	
+	}
+	.header
+	{
+		border-bottom:none;
+		padding-top:25px;
+		padding-bottom:10px;
+		
+	}
+	.header a
+	{
+		color:#602CA7;
+		text-decoration:none
+	}
+	.header img
+	{
+		padding-left:20px;	
+	}
+	
+	.vote h1
+	{
+		font-size: 2em;
+		padding: 0px;
+		margin: 2px;
+	}
+	
+	.voteup img, 
+	.votedown img
+	{
+		width:30px;
+	}
+	
+	.voteup
+	{
+		padding-top: 25px;
+	}
+	
+	.voteup, .votedown
+	{
+		cursor:pointer
+	}
+	
+	.question h3
+	{
+		padding: 0px;
+		margin-bottom: 0px;	
+		
+	}
+	
+	.qdetails
+	{
+		font-size:1em;
+		min-height: 3em;
+		max-height: 3em;
+		overflow:hidden
+	}
+	
+	.entity
+	{
+			
+	}
+	
+	.questauthor
+	{
+		padding-top:10px;
+		padding-right: 5px;
+	}
+
+	.createdate
+	{
+		padding-top:0px;
+		padding-right:5px;
+	}
+	.editdate
+	{
+		padding-top:0px;
+		padding-right:5px;
+	}
+	.createinfo
+	{
+			
+	}
+</style>
+<title>Question</title>
+</head>
+<body>
+	<div class="container">
+    	<div class="row">
+        	<div class="span1">
+            	<div class="page-header header">
+    				<img src="./img/nyu.jpg" height="80" width="80" />
+                </div>
+            </div>
+        	<div class="span7">
+    			<div class="page-header header">
+            		<h1><a href="#">NYU Answers</a></h1> 
+        		</div>
+            </div>
+        </div>
+        <div class="breadcrumb">
+                <div class="container">
+                {% if not guest %}
+					<a href = "#">{{user}}</a>
+				{% endif %}
+				{% if guest %}
+					<a href = "{{url}}" >Login</a>
+				{% endif %}
+                </div>
+         </div> 
+         
+         <div class="row">
+         	<div class="span1">
+            	
+            </div>
+            <div class="span10">
+            	<div class="row entity">
+                	<div class="span1 container vcenter">
+                    	<div class="voteup text-center">
+                    		<img src="./img/up.png" />
+                        </div>
+                        <div class="vote text-center">
+                    		<h1>56</h1>
+                        </div>
+                        <div class="votedown text-center">
+                        	<img src="./img/down.png" />
+                    	</div>
+                    </div>
+            		<div class="span8">
+                    		<div class="question">
+                        		<h3>How are you?</h3>
+                			</div>
+                            <div class="qdetails">
+                            	<p>I would like to know how you are doing since I am a very courious person</p>
+                    		</div>
+                            <div class="text-right createinfo">
+                                <div class="questauthor">
+                                    Asked by:&nbsp;<a href="#">ronak450</a>
+                                </div>
+                                <div class="createdate">
+                                    Created on:&nbsp;<span>17th Dec 2014</span>
+                                </div>
+                                <div class="editdate">
+                                    Edited on:&nbsp;<span>17th Dec 2014</span>
+                                </div>
+                           	</div>
+                    </div>
+                </div>
+            <div class="span1">
+            </div>
+         </div>	 
+	</div>
+</body>
+</html>

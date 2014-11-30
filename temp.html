@@ -8,6 +8,8 @@
 {% if not guest %}
 <h1>{{user}}</h1>
 {% endif %}
-<h1>guest</h1>
+{% if guest %}
+	<a href = "{{url}}" ><h1>guest</h1></a>
+{% endif %}
 </body>
 </html>
