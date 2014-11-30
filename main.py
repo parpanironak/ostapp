@@ -16,11 +16,26 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+def creator_key(creator_ID):
+    return ndb.Key('Creator',creator_ID)
+
+def question_key(question_ID):
+    return ndb.Key('Question',question_ID)
+
+def answer_key(answer_ID):
+    return ndb.Key('Answer',answer_ID)
+
+def avote_key(avote_ID):
+    return ndb.Key('AVote',avote_ID)
+
+def qvote_key(qvote_ID):
+    return ndb.Key('QVOte',qvote_ID)
+
 class Question(ndb.model):
     creator = ndb.StringProperty(indexed=True)
     qtitle = ndb.StringProperty(indexed=True)
     qdetail = ndb.StringProperty(indexed=False)
-    vote = ndb.IntegerProperty(indexed=False)
+    votecount = ndb.IntegerProperty(indexed=False)
     creationdatetime = ndb.DateTimeProperty(auto_now_add=True)
     date = ndb.DateProperty(auto_now_add=True)
     time = ndb.TimeProperty(auto_now_add=True)
@@ -28,12 +43,24 @@ class Question(ndb.model):
     
 class Answer(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
-    qtitle = ndb.StringProperty(indexed=True)
+    qid = ndb.StringProperty(indexed=True)
     answer = ndb.StringProperty(indexed=False)
-    vote = ndb.IntegerProperty(indexed=False)
+    votecount = ndb.IntegerProperty(indexed=False)
     creationdatetime = ndb.DateTimeProperty(auto_now_add=True)
     date = ndb.DateProperty(auto_now_add=True)
     time = ndb.TimeProperty(auto_now_add=True)
+
+
+class QVote(ndb.Model):
+    creator = ndb.StringProperty(indexed=True)
+    qid = ndb.StringProperty(indexed=True)
+    vote = ndb.BooleanProperty(indexed = False)
+    
+    
+class AVote(ndb.Model):
+    creator = ndb.StringProperty(indexed=True)
+    aid = ndb.StringProperty(indexed=True)
+    vote = ndb.BooleanProperty(indexed = False)
 
 class Creator(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
