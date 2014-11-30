@@ -16,7 +16,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
-"""def creator_key(creator_ID):
+def creator_key(creator_ID):
     return ndb.Key('Creator',creator_ID)
 
 def question_key(question_ID):
@@ -30,19 +30,14 @@ def avote_key(avote_ID):
 
 def qvote_key(qvote_ID):
     return ndb.Key('QVOte',qvote_ID)
-"""
 
-"""
-class Question(ndb.model):
+
+
+class Question(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
     qtitle = ndb.StringProperty(indexed=True)
-    qdetail = ndb.StringProperty(indexed=False)
-    votecount = ndb.IntegerProperty(indexed=False)
-    creationdatetime = ndb.DateTimeProperty(auto_now_add=True)
-    date = ndb.DateProperty(auto_now_add=True)
-    time = ndb.TimeProperty(auto_now_add=True)
-    views = ndb.IntegerProperty(indexed=False)
-    
+
+ 
 class Answer(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
     qid = ndb.StringProperty(indexed=True)
@@ -64,7 +59,7 @@ class AVote(ndb.Model):
 
 class Creator(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
-    """
+
 
 class Main(webapp2.RedirectHandler):
     
@@ -88,6 +83,10 @@ class Main(webapp2.RedirectHandler):
         }
         template = JINJA_ENVIRONMENT.get_template("temp2.html")
         self.response.write(template.render(template_values))
+        
+    def post(self):
+        
+        a = 10
 
 
 app = webapp2.WSGIApplication([
