@@ -9,6 +9,9 @@ from google.appengine.api import users
 from google.appengine.ext import db
 from google.appengine.ext import ndb
 from google.appengine.datastore.datastore_query import Cursor
+from google.appengine.api import images
+from google.appengine.ext import blobstore
+from google.appengine.ext.webapp import blobstore_handlers
 
 import jinja2
 import webapp2
@@ -22,7 +25,7 @@ def creator_key(creator_ID):
     return ndb.Key('Creator',creator_ID)
 
 def question_key(question_ID):
-    return db.Key('Question',question_ID)
+    return ndb.Key(Question,question_ID)
 
 def answer_key(answer_ID):
     return ndb.Key('Answer',answer_ID)
@@ -47,7 +50,7 @@ class Question(ndb.Model):
  
 class Answer(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
-    qid = ndb.StringProperty(indexed=True)
+    qid = ndb.IntegerProperty(indexed=True)
     answer = ndb.StringProperty(indexed=False)
     votecount = ndb.IntegerProperty(indexed=False)
     creationdatetime = ndb.DateTimeProperty(auto_now_add=True)
@@ -134,28 +137,56 @@ class Main(webapp2.RedirectHandler):
             url = users.create_login_url("/")
             self.redirect(url)
 
-class QuestionPage:
+class QuestionPage(webapp2.RequestHandler):
+    
     def get(self):
         user = users.get_current_user()
+        qid = int(self.request.get('id'))
         
         isguest = None
-        username = None
         url = None
+        isguest = None
+        
+        if not qid:
+            self.redirect('/')
+        
         if user:
             isguest = False
-            username = user.nickname()
+            
             url = users.create_logout_url('/')
         else:
             isguest = True
-            username = "guest"
             url = users.create_login_url("/")  
             
+        key = question_key(qid);
+        quest = key.get();
         
-
-
-    
+        answers = Answer.query(Answer.qid == qid)
         
+        template_values = {
+            'user' : user.nickname(),
+            'isguest' : isguest,
+            'url' : url,
+            'question' : quest,
+            'answers' : answers
+        }   
+         
+        template = JINJA_ENVIRONMENT.get_template("quest.html")
+        self.response.write(template.render(template_values))
+       
+    def post(self):
+        user = users.get_current_user();
+        qid = int(self.request.get('id'))
+        
+        if user:
+            self.answer = Answer(creator=user.nickname(), 
+                                 answer=self.request.get('comment'), 
+                                 votecount=0, 
+                                 qid=qid)        
+            self.answer.put();
+            self.redirect(self.request.referer)
+            
 app = webapp2.WSGIApplication([
        ('/',Main),
-       ('/', QuestionPage)                       
+       ('/quest', QuestionPage)                       
     ], debug=True)
