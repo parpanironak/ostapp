@@ -89,7 +89,7 @@ class Main(webapp2.RedirectHandler):
             url = users.create_login_url("/")
         
         
-        self.query = Question.query().order(Question.creationdatetime);
+        self.query = Question.query().order(-Question.creationdatetime);
         curs = Cursor(urlsafe=self.request.get('cursor'))        
         prevcurs = self.request.get('prevcursor')        
         qlist, next_curs, more = self.query.fetch_page(5, start_cursor=curs)
@@ -147,6 +147,8 @@ class QuestionPage(webapp2.RequestHandler):
         url = None
         isguest = None
         
+        
+        
         if not qid:
             self.redirect('/')
         
@@ -158,17 +160,45 @@ class QuestionPage(webapp2.RequestHandler):
             isguest = True
             url = users.create_login_url("/")  
             
+        
+            
         key = question_key(qid);
         quest = key.get();
+        curs = Cursor(urlsafe=self.request.get('cursor'))        
+        prevcurs = self.request.get('prevcursor')    
         
-        answers = Answer.query(Answer.qid == qid)
+        answers = Answer.query(Answer.qid == qid).order(-Answer.creationdatetime)
+        alist, next_curs, more = answers.fetch_page(5, start_cursor=curs)
+        
+        nextlink = None        
+        prevlink = None
+        less = False;
+        
+        
+        if prevcurs:
+            less = True;
+            prevlink = "/quest?cursor=" + prevcurs + "&id=" + str(qid)
+            
+        elif self.request.get('cursor'):
+            less = True;
+            prevlink = "/quest?id=" + str(qid)
+        
+        if next_curs:
+            nextlink = "/quest?cursor=" + next_curs.urlsafe() + "&prevcursor=" + curs.urlsafe() + "&id=" + str(qid)
+        
+        else:
+            more=False;
         
         template_values = {
             'user' : user.nickname(),
             'isguest' : isguest,
             'url' : url,
             'question' : quest,
-            'answers' : answers
+            'answers' : alist,
+            'more': nextlink,
+            'ismore': more,
+            'isless': less,
+            'less': prevlink,
         }   
          
         template = JINJA_ENVIRONMENT.get_template("quest.html")
