@@ -104,54 +104,68 @@
 </style>
 <title>Question</title>
 </head>
+
 <body>
-	<div class="container ">
-    
-    	<div class="breadcrumb text-left">
-                <div class="container">
-                {% if not isguest %}
-					<span>Logged in as: <a href = "#">{{user}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href = "{{url}}">Log Out</a></span>
-					
-				{% endif %}
-				{% if isguest %}
-					<a href = "{{url}}" >Login</a>
-				{% endif %}
+
+	<div class="container">
+    	<div class="row">
+    		<div class="span8">
+                <div class="breadcrumb text-left">
+                        <div class="container">
+                        {% if not isguest %}
+                            <span>Logged in as: <a href = "#">{{user}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href = "{{url}}">Log Out</a></span>
+                        
+                        {% endif %}
+                        {% if isguest %}
+                            <a href = "{{url}}" >Login</a>
+                        {% endif %}
+                        </div>
+				</div>
+         	</div>
+       </div>
+       <div class="clearfix"></div>
+       <div class="row">
+       		<div class="span8">
+            	<div class="span1">
+                    <div class="page-header header">
+                        <img src="./img/nyu.jpg" />
+                    </div>
                 </div>
-         </div> 
-         <div class="row">
-         	<div class="span1"></div>
-        	<div class="span1">
-            	<div class="page-header header">
-    				<img src="./img/nyu.jpg" />
+                <div class="span7">
+                    <div class="page-header header">
+                        <h1><a href="#">NYU Answers</a></h1> 
+                    </div>
                 </div>
             </div>
-        	<div class="span7">
-    			<div class="page-header header">
-            		<h1><a href="#">NYU Answers</a></h1> 
-        		</div>
-            </div>
-         </div>
-        
-		 <div class="clearfix"></div>
-         <div class="row">
-         <div class="span2"></div>
-         <div class="span 8 row text-center">
-            <div class="row">
-            	<div class="container ask text-right span8">        
+       </div>
+       <div class="clearfix"></div>
+       <div class="row">
+       		<div class="span8">
+            	<div class="container ask text-right">        
          			<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#demo">Ask Question</button>
          
          			<div id="demo" class="collapse">
-          				<form role="form" method="post">
-                			<textarea class="modal-form" id="comment" name="comment" class="span12"></textarea> 
-                			<button type="submit">submit</button>
+          				<form role="form">
+                			<textarea id="comment" name="comment" class="span12"></textarea> 
                 		</form>
          			</div>
-         		</div>   
-            	<div class="container span8">
+         		</div>
+            </div>
+       </div>
+       <div class="clearfix"></div>
+       <div class="row">
+       		<div class="span8">
+            	<div class="container">
                 	<h1>Top questions</h1>
                 </div>
-                {% for q in qlist %}
-            	<div class="row entity span8">
+            </div>	
+       </div>
+       
+       <div class="clearfix"></div>
+       <div class="row">
+       		<div class="span8">
+            	{% for q in qlist %}
+            	<div class="row entity">
                 	<div class="span1 container vcenter">
                     	<div class="voteup text-center">
                     		<img src="./img/up.png" />
@@ -184,9 +198,8 @@
                     </div>
                 </div>
                 {% endfor %}
-         	</div>
-         </div>	 
-		</div>
-	</div>
+            </div>	
+       </div>
+    </div>
+
 </body>
-</html>
