@@ -59,12 +59,12 @@ class Answer(ndb.Model):
 
 class QVote(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
-    qid = ndb.StringProperty(indexed=True)
+    qid = ndb.IntegerProperty(indexed=True)
     vote = ndb.BooleanProperty(indexed = False)
       
 class AVote(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
-    aid = ndb.StringProperty(indexed=True)
+    aid = ndb.IntegerProperty(indexed=True)
     vote = ndb.BooleanProperty(indexed = False)
 
 class Creator(ndb.Model):
@@ -164,6 +164,7 @@ class QuestionPage(webapp2.RequestHandler):
             
         key = question_key(qid);
         quest = key.get();
+        
         curs = Cursor(urlsafe=self.request.get('cursor'))        
         prevcurs = self.request.get('prevcursor')    
         
@@ -216,7 +217,45 @@ class QuestionPage(webapp2.RequestHandler):
             self.answer.put();
             self.redirect(self.request.referer)
             
+class QVotePage(webapp2.RequestHandler):
+    
+    def get(self):
+        user = users.get_current_user();
+        qid = int(self.request.get('id'))
+       
+        vote = self.request.get('vote')
+        if vote == 'True':
+            vote = True;
+        else:
+            vote = False;
+        if user:
+            self.qvote = QVote.query(ndb.AND(QVote.creator == user.nickname(), QVote.qid == qid)).get() 
+            key = question_key(qid);
+            self.quest = key.get();     
+            if self.qvote:
+                if self.qvote.vote != vote:
+                    self.qvote.vote = vote
+                    self.qvote.put();
+                    if vote:
+                        self.quest.votecount = self.quest.votecount + 2;
+                    else:
+                        self.quest.votecount = self.quest.votecount - 2;
+                    
+                    self.quest.put()
+            else:                
+                self.qvote = QVote(creator=user.nickname(), qid = qid, vote = vote)
+                self.qvote.put()
+                if vote:
+                        self.quest.votecount = self.quest.votecount + 1;
+                else:
+                        self.quest.votecount = self.quest.votecount - 1;
+                
+                self.quest.put()
+            
+        self.redirect(self.request.referer)
+        
 app = webapp2.WSGIApplication([
        ('/',Main),
-       ('/quest', QuestionPage)                       
+       ('/quest', QuestionPage),
+       ('/qvote', QVotePage)                    
     ], debug=True)

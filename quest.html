@@ -146,13 +146,13 @@
             	<div class="row entity">
                 	<div class="span1 container vcenter">
                     	<div class="voteup text-center">
-                    		<img src="./img/up.png" />
+                    		<img src="./img/up.png" onclick="location.href='./qvote?id={{question.key.id()}}&vote=True'"/>
                         </div>
                         <div class="vote text-center">
                     		<h1>{{question.votecount}}</h1>
                         </div>
                         <div class="votedown text-center">
-                        	<img src="./img/down.png" />
+                        	<img src="./img/down.png" onclick="location.href='./qvote?id={{question.key.id()}}&vote=False'"/>
                     	</div>
                     </div>
             		<div class="span6">
