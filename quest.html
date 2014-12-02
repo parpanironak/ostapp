@@ -162,14 +162,21 @@
                             <div class="qdetails">
                             	<p>{{question.qdetail}}</p>
                     		</div>
-                            <div class="text-right createinfo">
-                                <div class="questauthor">
-                                    Asked by:&nbsp;<a href="#">{{question.creator}}</a>
-                                </div>
-                                <div class="createdate">
-                                    Created on:&nbsp;<span>{{question.date}}</span>
-                                </div>
-                           	</div>
+                    		<div class="row">
+                    			<div class="span3">
+                    				{% if not isguest and (user == question.creator) %}
+                   					<button class="btn btn-primary">Edit</button>
+                   					{% endif %}
+                    			</div>
+	                            <div class="text-right createinfo span3">
+	                                <div class="questauthor">
+	                                    Answered by:&nbsp;<a href="#">{{question.creator}}</a>
+	                                </div>
+	                                <div class="createdate">
+	                                    Created on:&nbsp;<span>{{question.date}}</span>
+	                                </div>
+	                           	</div>
+	                        </div>
                     </div>
                 </div>
             </div>
@@ -194,28 +201,35 @@
        			{% for a in answers %}
             	<div class="row entity">
                 	<div class="span1 container vcenter">
-                    	<div class="voteup text-center">
-                    		<img src="./img/up.png" />
+                    	<div class="voteup text-center" >
+                    		<img src="./img/up.png" onclick="location.href='./avote?id={{a.key.id()}}&vote=True'"/>
                         </div>
                         <div class="vote text-center">
                     		<h1>{{a.votecount}}</h1>
                         </div>
-                        <div class="votedown text-center">
-                        	<img src="./img/down.png" />
+                        <div class="votedown text-center" >
+                        	<img src="./img/down.png" onclick="location.href='./avote?id={{a.key.id()}}&vote=False'"/>
                     	</div>
                     </div>
             		<div class="span6">
                     		<div class="question">
                         		<h5>{{a.answer}}</h5>
                 			</div>
-                            <div class="text-right createinfo">
-                                <div class="questauthor">
-                                    Asked by:&nbsp;<a href="#">{{a.creator}}</a>
-                                </div>
-                                <div class="createdate">
-                                    Created on:&nbsp;<span>{{a.date}}</span>
-                                </div>
-                           	</div>
+                			<div class="row">
+                				<div class="span3">
+                    				{% if not isguest and (user == a.creator) %}
+                   					<button class="btn btn-primary">Edit</button>
+                   					{% endif %}
+                    			</div>
+	                            <div class="text-right createinfo span3">
+	                                <div class="questauthor">
+	                                    Asked by:&nbsp;<a href="#">{{a.creator}}</a>
+	                                </div>
+	                                <div class="createdate">
+	                                    Created on:&nbsp;<span>{{a.date}}</span>
+	                                </div>
+	                           	</div>
+	                        </div>
                     </div>
                 </div>
                 {% endfor %}
