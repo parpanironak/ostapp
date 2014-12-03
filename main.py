@@ -298,9 +298,88 @@ class QVotePage(webapp2.RequestHandler):
             
         self.redirect(self.request.referer)  
               
+class EditPage(webapp2.RedirectHandler):
+    def get(self):
+        user = users.get_current_user();
+        id = int(self.request.get('id'))
+        type = self.request.get('type')
+        
+        if user:      
+            if type == 'quest':
+                key = question_key(id);
+                self.quest = key.get();
+                
+                if self.quest:
+                    if str(user) == str(self.quest.creator):
+                        
+                        template_values = {
+                        'user': user,
+                        'validuser': True,
+                        'data': self.quest.qtitle,               
+                        'question' : self.quest,
+                        'id': id,
+                        'type': type,
+                        }
+                        template = JINJA_ENVIRONMENT.get_template("edit.html")
+                        self.response.write(template.render(template_values))
+                        
+                        
+            elif type == 'ans':    
+                key = answer_key(id);
+                self.ans = key.get();
+                
+                if self.ans:
+                    if str(user) == str(self.ans.creator):
+                        
+                        template_values = {
+                        'user': user,
+                        'validuser': True,
+                        'data': self.ans.answer,               
+                        'question' : self.ans,
+                        'id': id,
+                        'type': type,
+                        }
+                        template = JINJA_ENVIRONMENT.get_template("edit.html")
+                        self.response.write(template.render(template_values))
+       
+        else:
+            self.redirect('/');
+            
+    def post(self):
+        user = users.get_current_user();
+        id = int(self.request.get('id'))
+        type = self.request.get('type') 
+        data = self.request.get('data') 
+        
+        if user:      
+            if type == 'quest':
+                key = question_key(id);
+                self.quest = key.get();
+                
+                if self.quest:
+                    if str(user) == str(self.quest.creator):
+                        self.quest.qtitle = data;
+                        self.quest.put()
+                        self.redirect('./quest?id=%s' % id)
+                
+                        
+                        
+            elif type == 'ans':    
+                key = answer_key(id);
+                self.ans = key.get();
+                if self.ans:
+                    if str(user) == str(self.ans.creator):
+                        self.ans.answer = data;
+                        self.ans.put()
+                        self.redirect('./quest?id=%s' % self.ans.qid)
+       
+        else:
+            self.redirect('/');   
+            
 app = webapp2.WSGIApplication([
        ('/',Main),
        ('/quest', QuestionPage),
        ('/qvote', QVotePage),
-       ('/avote', AVotePage),                    
+       ('/avote', AVotePage),
+       ('/edit', EditPage),                    
     ], debug=True)

@@ -131,7 +131,7 @@
                         <img src="./img/nyu.jpg" />
                     </div>
                 </div>
-                <div class="span7">
+                <div class="span6">
                     <div class="page-header header">
                         <h1><a href="#">NYU Answers</a></h1> 
                     </div>
@@ -141,65 +141,24 @@
        <div class="clearfix"></div>
        <div class="row">
        		<div class="span8">
-            	<div class="container ask text-right">        
-         			<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#demo">Ask Question</button>
-         
-         			<div id="demo" class="collapse">
-          				<form role="form">
-                			<textarea id="comment" name="comment" class="span12"></textarea> 
+            	<div class="container ask">            
+         			<div id="demo">
+          				<form role="form" method="post">
+                			<textarea id="data" name="data" class="span8">{{data}}</textarea>
+                			<div class="clearfix"></div>
+                			<button class="btn btn-primary" type="submit">Edit</button>
+         					<button type="button" class="btn btn-primary" type="button">Cancel</button> 
+         					
+         					<input type="hidden" name="user" value="{{user}}"/>
+         					<input type="hidden" name="id" value="{{id}}"/>
+							<input type="hidden" name="type" value="{{type}}"/>
                 		</form>
          			</div>
+         			
          		</div>
             </div>
        </div>
        <div class="clearfix"></div>
-       <div class="row">
-       		<div class="span8">
-            	<div class="container">
-                	<h1>Top questions</h1>
-                </div>
-            </div>	
-       </div>
-       
-       <div class="clearfix"></div>
-       <div class="row">
-       		<div class="span8">
-            	{% for q in qlist %}
-            	<div class="row entity">
-                	<div class="span1 container vcenter">
-                    	<div class="voteup text-center">
-                    		<img src="./img/up.png" />
-                        </div>
-                        <div class="vote text-center">
-                    		<h1>{{q.votecount}}</h1>
-                        </div>
-                        <div class="votedown text-center">
-                        	<img src="./img/down.png" />
-                    	</div>
-                    </div>
-            		<div class="span6">
-                    		<div class="question">
-                        		<h3>{{q.qtitle}}</h3>
-                			</div>
-                            <div class="qdetails">
-                            	<p>{{q.qdetail}}</p>
-                    		</div>
-                            <div class="text-right createinfo">
-                                <div class="questauthor">
-                                    Asked by:&nbsp;<a href="#">{{q.creator}}</a>
-                                </div>
-                                <div class="createdate">
-                                    Created on:&nbsp;<span>{{q.date}}</span>
-                                </div>
-                                <div class="editdate">
-                                    Edited on:&nbsp;<span>17th Dec 2014</span>
-                                </div>
-                           	</div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>	
-       </div>
     </div>
 
 </body>
