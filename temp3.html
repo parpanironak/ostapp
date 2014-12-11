@@ -109,10 +109,24 @@
 		resize: none;
 	}
 	
+	.ask div .tags
+	{
+		height: 1.5em;
+		resize: none;
+	}
 	.ask div .comment
 	{
 		height: 6em;
 		resize: none;
+	}
+	.tag
+	{
+		margin-bottom:6px;
+	}
+	
+	.tags 
+	{
+		padding-top:10px;
 	}
 </style>
 <title>Question</title>
@@ -161,6 +175,7 @@
           				<form role="form" method="post">
                 			<textarea id="comment" name="comment" class="span8 question"></textarea>
                 			<textarea id="comment1" name="comment1" class="span8 comment"></textarea>  
+                			<textarea id="comment2" name="comment2" class="span8 tags"></textarea>
                 			<button type="submit" class="btn btn-primary">submit</button>
                 		</form>
          			</div>
@@ -218,7 +233,15 @@
 	                                </div>
 	                           	</div>
 	                       	</div>
+	                       	<div class="row tags">
+	                        	<div class="span6">
+	                        			{% for tag in q.tags %}
+	                        				<button class="btn btn-info tag" onclick="location.href='./tags?tag={{tag}}'">{{tag}}</button>&nbsp;
+	                        			{% endfor %}
+	                        	</div>
+	               			</div>
                     </div>
+                    
                 </div>
                 {% endfor %}
             </div>

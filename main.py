@@ -15,6 +15,7 @@ from google.appengine.ext.webapp import blobstore_handlers
 
 import jinja2
 import webapp2
+import re
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -36,6 +37,8 @@ def avote_key(avote_ID):
 def qvote_key(qvote_ID):
     return ndb.Key('QVOte',qvote_ID)
 
+def tag_key(qvote_ID):
+    return ndb.Key('QVOte',qvote_ID)
 
 
 class Question(ndb.Model):
@@ -47,7 +50,12 @@ class Question(ndb.Model):
     modificationdatetime = ndb.DateTimeProperty(auto_now=True)
     date = ndb.DateProperty(auto_now_add=True)
     mdate = ndb.DateProperty(auto_now=True)
+    tags = ndb.StringProperty(repeated=True)
  
+ 
+class Tag(ndb.Model): 
+    tagvalue = ndb.StringProperty(indexed=True)
+    
 class Answer(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
     qid = ndb.IntegerProperty(indexed=True)
@@ -142,7 +150,25 @@ class Main(webapp2.RedirectHandler):
         user = users.get_current_user();
         if user:
             if self.request.get('comment'):
-                self.question = Question(creator=user.nickname(), qtitle=self.request.get('comment'), qdetail = self.request.get("comment2"),votecount=0)        
+                tags = re.compile("[\t\n,; :]+").split(self.request.get('comment2'))
+                tags2 = set()
+                for tag in tags:
+                    if tag == "":
+                        continue;
+                    else:
+                        tags2.add(tag.lower());
+                
+                for tag in tags2:
+                    t = Tag.query(Tag.tagvalue == tag).fetch();
+                    if not t:
+                        ta = Tag(tagvalue = tag) 
+                        ta.put()
+                    
+                self.question = Question(creator=user.nickname(), 
+                                         qtitle=self.request.get('comment'), 
+                                         qdetail = self.request.get("comment1"),
+                                         votecount=0,
+                                         tags=tags);        
                 self.question.put();
             self.redirect("/")
         else:
@@ -323,12 +349,15 @@ class EditPage(webapp2.RedirectHandler):
                 
                 if self.quest:
                     if str(user) == str(self.quest.creator):
-                        
+                        data3 =""
+                        if self.quest.tags :
+                            data3 = ",".join(self.quest.tags)
                         template_values = {
                         'user': user,
                         'validuser': True,
                         'data': self.quest.qtitle,   
-                        'data2': self.quest.qdetail,            
+                        'data2': self.quest.qdetail,
+                        'data3': data3,            
                         'question' : self.quest,
                         'id': id1,
                         'type': type1,
@@ -358,13 +387,15 @@ class EditPage(webapp2.RedirectHandler):
        
         else:
             self.redirect('/');
-            
+  
     def post(self):
         user = users.get_current_user();
-        id1 = int(self.request.get('id1'))
+        id1 = int(self.request.get('id'))
         type1 = self.request.get('type') 
         data = self.request.get('data') 
         data2 = self.request.get('data2') 
+        data3 = self.request.get('data3');
+    
         if user:      
             if type1 == 'quest':
                 key = question_key(id1);
@@ -374,8 +405,23 @@ class EditPage(webapp2.RedirectHandler):
                     if str(user) == str(self.quest.creator):
                         self.quest.qtitle = data;
                         self.quest.qdetail = data2;
+                        tags = re.compile("[\t\n,; :]+").split(data3)
+                        tags2 = set()
+                        
+                        for tag in tags:
+                            if tag == '':
+                                continue;
+                            
+                            tags2.add(tag.lower())
+                        self.quest.tags = list(tags2)
+                        
+                        for tag in self.quest.tags:
+                            t = Tag.query(Tag.tagvalue == tag).fetch();
+                            if not t:
+                                t = Tag(tagvalue = tag) 
+                                t.put()
                         self.quest.put()
-                        self.redirect('./quest?id1=%s' % id1)
+                        self.redirect('./quest?id=%s' % id1)
                 
                         
                         
@@ -386,15 +432,111 @@ class EditPage(webapp2.RedirectHandler):
                     if str(user) == str(self.ans.creator):
                         self.ans.answer = data;
                         self.ans.put()
-                        self.redirect('./quest?id1=%s' % self.ans.qid)
+                        self.redirect('./quest?id=%s' % self.ans.qid)
        
         else:
             self.redirect('/');   
             
+class TagPage(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        
+        isguest = None
+        username = None
+        url = None
+        if user:
+            isguest = False
+            username = user.nickname()
+            url = users.create_logout_url('/')
+            
+        else:
+            isguest = True
+            username = "guest"
+            url = users.create_login_url("/")
+            
+        tag = self.request.get('tag');
+        
+                
+        self.query = Question.query(Question.tags == tag).order(-Question.creationdatetime);
+        
+        curs = Cursor(urlsafe=self.request.get('cursor'))        
+        prevcurs = self.request.get('prevcursor')        
+        qlist, next_curs, more = self.query.fetch_page(10, start_cursor=curs)
+        
+        
+        nextlink = None        
+        prevlink = None
+        less = False;
+        
+        if prevcurs:
+            less = True;
+            prevlink = "/?cursor=" + prevcurs
+            
+        elif self.request.get('cursor'):
+            less = True;
+            prevlink = "/"
+                
+        if next_curs:
+            nextlink = "/?cursor=" + next_curs.urlsafe() + "&prevcursor=" +curs.urlsafe()
+        
+        else:
+            more=False;
+        
+        for q in qlist:
+            if q.qdetail and len(q.qdetail) > 500:
+                q.qdetail = q.qdetail[:500] + "..."
+            if q.qtitle and len(q.qtitle) > 50:
+                q.qtitle = q.qtitle[:50] + "..."
+                
+        
+        template_values = {
+            'user' : username,
+            'isguest' : isguest,
+            'url' : url,
+            'qlist': qlist,
+            'more': nextlink,
+            'ismore': more,
+            'isless': less,
+            'less': prevlink,
+        }
+        template = JINJA_ENVIRONMENT.get_template("temp3.html")
+        self.response.write(template.render(template_values))
+    
+    def post(self):
+        
+        user = users.get_current_user();
+        if user:
+            if self.request.get('comment'):
+                tags = re.compile("[\t\n,; :]+").split(self.request.get('comment2'))
+                tags2 = set()
+                for tag in tags:
+                    if tag == "":
+                        continue;
+                    else:
+                        tags2.add(tag.lower());
+                
+                for tag in tags2:
+                    t = Tag.query(Tag.tagvalue == tag).fetch();
+                    if not t:
+                        ta = Tag(tagvalue = tag) 
+                        ta.put()
+                    
+                self.question = Question(creator=user.nickname(), 
+                                         qtitle=self.request.get('comment'), 
+                                         qdetail = self.request.get("comment1"),
+                                         votecount=0,
+                                         tags=tags);        
+                self.question.put();
+            self.redirect("/")
+        else:
+            url = users.create_login_url("/")
+            self.redirect(url)
+                    
 app = webapp2.WSGIApplication([
        ('/',Main),
        ('/quest', QuestionPage),
        ('/qvote', QVotePage),
        ('/avote', AVotePage),
-       ('/edit', EditPage),                    
+       ('/edit', EditPage),  
+       ('/tags',TagPage),                  
     ], debug=True)
