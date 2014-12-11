@@ -135,7 +135,7 @@ class Main(webapp2.RedirectHandler):
         
         link= re.compile(r'(?<!img src\=\")(https?://w*\.?(\S+)\.co\S+)')
         img = re.compile(r'(https?://\S+/(\S+)\.(jpg|jpeg|gif|png))')
-        locimg = re.compile(r'(?<!")(https?://\S+/usr_img\?img_id(\S+))')
+        locimg = re.compile(r'(?<!")(https?://\S+/usrimg\?img_id(\S+))')
             
         
         
@@ -143,10 +143,10 @@ class Main(webapp2.RedirectHandler):
         for q in qlist:
             q.qdetail = img.sub(r'<img src="\1" alt="\2">',q.qdetail)
             q.qdetail = locimg.sub(r'<img src="\1" alt="\2">',q.qdetail)      
-            q.qdetail = link.sub(r'<a href="\1">\2</a>',q.qdetail)  
+            q.qdetail = link.sub(r'<a href="\1">\2</a>',q.qdetail) 
             
             if q.qdetail and len(q.qdetail) > 500:
-                q.qdetail = q.qdetail[:500] + "..."
+                q.qdetail = q.qdetail[:500] + "...<a href = './quest?id="+str(q.key.id())+"'>read more</a>"
             if q.qtitle and len(q.qtitle) > 50:
                 q.qtitle = q.qtitle[:50] + "..."
                 
@@ -530,7 +530,7 @@ class TagPage(webapp2.RequestHandler):
             q.qdetail = locimg.sub(r'<img src="\1" alt="\2">',q.qdetail)      
             q.qdetail = link.sub(r'<a href="\1">\2</a>',q.qdetail)  
             if q.qdetail and len(q.qdetail) > 500:
-                q.qdetail = q.qdetail[:500] + "..."
+                q.qdetail = q.qdetail[:500] + "...<a href = './quest?id="+str(q.key.id())+"'>read more</a>"
             if q.qtitle and len(q.qtitle) > 50:
                 q.qtitle = q.qtitle[:50] + "..."
                 
