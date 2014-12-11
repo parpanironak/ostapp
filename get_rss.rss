@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        {% for q in quest %}
+        <item>
+            <title>{{q.qtitle}}</title>
+            <details>{{q.qdetail | truncate(200)}}</details>
+            <link>http://{{host}}/quest?id={{q.key.id()}}</link>
+            <createdate>{{q.creationdatetime}}</createdate>
+            <moddate>{{q.modificationdatetime}}</moddate>
+            <creator>{{q.creator}}</creator>
+        </item>
+        {% endfor %}
+    </channel>
+</rss>

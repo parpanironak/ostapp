@@ -5,8 +5,8 @@ Created on Nov 30, 2014
 '''
 
 import os
+
 from google.appengine.api import users
-from google.appengine.ext import db
 from google.appengine.ext import ndb
 from google.appengine.datastore.datastore_query import Cursor
 from google.appengine.api import images
@@ -639,7 +639,48 @@ class ImagePage(webapp2.RequestHandler):
             username = "guest"
             url = users.create_login_url("/")
         
+class GetRSS(webapp2.RequestHandler):
+
+    def get(self):
+        
+        host = self.request.host
+        
+        self.query = Question.query().order(-Question.creationdatetime);
+        
+        self.quest = self.query.fetch()
+       
+        template_values = {
+            'quest' : self.quest,   
+            'host': host         
+        }
+        
+        self.response.headers['Content-Type'] = "text/xml; charset=utf-8"
+        template = JINJA_ENVIRONMENT.get_template('get_rss.rss')
+        self.response.write(template.render(template_values))
             
+class GetQRSS(webapp2.RequestHandler):
+
+    def get(self):
+        
+        host = self.request.host
+        
+        if self.request.get('qid'):
+            key = question_key(int(self.request.get('qid')));
+            quest = key.get();
+            answers = Answer.query(Answer.qid == int(self.request.get('qid'))).order(-Answer.creationdatetime)
+            answers = answers.fetch()
+       
+            template_values = {
+                'quest' : quest,
+                'answer':answers,   
+                'host': host         
+            }
+            
+            self.response.headers['Content-Type'] = "text/xml; charset=utf-8"
+            template = JINJA_ENVIRONMENT.get_template('getqrss.rss')
+            self.response.write(template.render(template_values))
+            
+        self.response.write("wrong id")
                     
 app = webapp2.WSGIApplication([
        ('/',Main),
@@ -650,5 +691,7 @@ app = webapp2.WSGIApplication([
        ('/usrimg', GetImage),
        ('/edit', EditPage),  
        ('/tags',TagPage),
-       ('/viewimg',ImagePage),                  
+       ('/viewimg',ImagePage), 
+       ('/getrss', GetRSS),   
+       ('/getqrss', GetQRSS),                 
     ], debug=True)
