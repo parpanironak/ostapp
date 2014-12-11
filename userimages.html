@@ -66,9 +66,13 @@
 	.qdetails
 	{
 		font-size:1em;
-		min-height: 3em;
-		max-height: 3em;
-		overflow:hidden
+	}
+	
+	.qdetails img
+	{
+		max-height: 300px;
+		max-width: 300px;
+		display: block;
 	}
 	
 	.entity
@@ -97,24 +101,47 @@
 	{
 	}
 	
+	.ask .collapse
+	{
+		padding-top:10px;
+		padding-right:20px;
+	}
+	
 	.ask div .question
 	{
 		height: 1.5em;
 		resize: none;
 	}
 	
+	.ask div .tags
+	{
+		height: 1.5em;
+		resize: none;
+	}
 	.ask div .comment
 	{
 		height: 6em;
 		resize: none;
 	}
-	
-	.ask div .answer
+	.tag
 	{
-		height: 6em;
-		resize: none;
+		margin-bottom:6px;
 	}
 	
+	.tags 
+	{
+		padding-top:10px;
+	}
+	
+	.container img {
+		max-height: 300px;
+		max-width: 300px;
+		display: block;
+	}
+	.container
+	{
+		margin-bottom: 20px;
+	}
 </style>
 <title>Question</title>
 </head>
@@ -129,7 +156,6 @@
                         {% if not isguest %}
                             <span>Logged in as: <a href = "#">{{user}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href = "{{url}}">Log Out</a>
                             &nbsp;&nbsp;|&nbsp;&nbsp;<a href="/viewimg">Images</a></span>
-                        
                         {% endif %}
                         {% if isguest %}
                             <a href = "{{url}}" >Login</a>
@@ -153,34 +179,23 @@
                 </div>
             </div>
        </div>
-       <div class="clearfix"></div>
+       <br></br>
+       <br />
        <div class="row">
        		<div class="span8">
-            	<div class="container ask">            
-         			<div id="demo">
-          				<form role="form" method="post">
-          					{% if type == 'quest' %}
-                			<textarea id="data" name="data" class="span8 question">{{data}}</textarea>
-                			<textarea id="data2" name="data2" class="span8 comment">{{data2}}</textarea>
-                			<textarea id="data3" name="data3" class="span8 question">{{data3}}</textarea>
-                			{% endif %}
-                			{% if type == 'ans' %}
-                			<textarea id="data" name="data" class="span8 answer">{{data}}</textarea>
-                			{% endif %}
-                			<div class="clearfix"></div>
-                			<button class="btn btn-primary" type="submit">Edit</button>
-         					<button type="button" class="btn btn-primary" type="button" onclick="location.href='{{cancel}}'">Cancel</button> 
-         					
-         					<input type="hidden" name="user" value="{{user}}"/>
-         					<input type="hidden" name="id" value="{{id}}"/>
-							<input type="hidden" name="type" value="{{type}}"/>
-                		</form>
-         			</div>
-         			
-         		</div>
-            </div>
+       			<div class="row">
+       			{% for img in images %}
+       				<div class="container">
+       					<div><img src="/usrimg?img_id={{img.imgid}}"></div>
+       					<div>
+       						<a href="http://{{host}}/usrimg?img_id={{img.imgid}}">Ref Link</a>
+       					</div>
+       				</div>
+       			{% endfor %}
+       			</div>
+       		</div>
+       		
        </div>
-       <div class="clearfix"></div>
     </div>
 
 </body>

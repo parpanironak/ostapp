@@ -599,6 +599,47 @@ class UploadImage(blobstore_handlers.BlobstoreUploadHandler):
         
         self.redirect('/')
  
+class ImagePage(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        
+        isguest = None
+        username = None
+        url = None
+        if user:
+            isguest = False
+            username = user.nickname()
+            url = users.create_logout_url('/')
+            
+            
+            self.query = ImageData.query(ancestor = creator_key(user.nickname()))
+            
+            images = self.query.fetch()
+                                                     
+            if os.environ.get('HTTP_HOST'): 
+                host = os.environ['HTTP_HOST'] 
+            else: 
+                host = os.environ['SERVER_NAME']
+            
+            host = self.request.host
+        
+            template_values = {
+            'user' : username,
+            'isguest' : isguest,
+            'url' : url,
+            'images':images,
+            'host':host
+            }
+            
+            template = JINJA_ENVIRONMENT.get_template('userimages.html')
+            self.response.write(template.render(template_values))
+            
+        else:
+            isguest = True
+            username = "guest"
+            url = users.create_login_url("/")
+        
+            
                     
 app = webapp2.WSGIApplication([
        ('/',Main),
@@ -609,5 +650,5 @@ app = webapp2.WSGIApplication([
        ('/usrimg', GetImage),
        ('/edit', EditPage),  
        ('/tags',TagPage),
-                         
+       ('/viewimg',ImagePage),                  
     ], debug=True)

@@ -148,8 +148,8 @@
                 <div class="breadcrumb text-left">
                         <div class="container">
                         {% if not isguest %}
-                            <span>Logged in as: <a href = "#">{{user}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href = "{{url}}">Log Out</a></span>
-                        
+                            <span>Logged in as: <a href = "#">{{user}}</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href = "{{url}}">Log Out</a>
+                            &nbsp;&nbsp;|&nbsp;&nbsp;<a href="/viewimg">Images</a></span>
                         {% endif %}
                         {% if isguest %}
                             <a href = "{{url}}" >Login</a>
