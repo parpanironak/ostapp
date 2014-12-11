@@ -97,10 +97,24 @@
 	{
 	}
 	
-	.ask
+	.ask div .question
 	{
-		padding-top: 25px
+		height: 1.5em;
+		resize: none;
 	}
+	
+	.ask div .comment
+	{
+		height: 6em;
+		resize: none;
+	}
+	
+	.ask div .answer
+	{
+		height: 6em;
+		resize: none;
+	}
+	
 </style>
 <title>Question</title>
 </head>
@@ -133,7 +147,7 @@
                 </div>
                 <div class="span6">
                     <div class="page-header header">
-                        <h1><a href="#">NYU Answers</a></h1> 
+                        <h1><a href="/">NYU Answers</a></h1> 
                     </div>
                 </div>
             </div>
@@ -144,10 +158,16 @@
             	<div class="container ask">            
          			<div id="demo">
           				<form role="form" method="post">
-                			<textarea id="data" name="data" class="span8">{{data}}</textarea>
+          					{% if type == 'quest' %}
+                			<textarea id="data" name="data" class="span8 question">{{data}}</textarea>
+                			<textarea id="data2" name="data2" class="span8 comment">{{data2}}</textarea>
+                			{% endif %}
+                			{% if type == 'ans' %}
+                			<textarea id="data" name="data" class="span8 answer">{{data}}</textarea>
+                			{% endif %}
                 			<div class="clearfix"></div>
                 			<button class="btn btn-primary" type="submit">Edit</button>
-         					<button type="button" class="btn btn-primary" type="button">Cancel</button> 
+         					<button type="button" class="btn btn-primary" type="button" onclick="location.href='{{cancel}}'">Cancel</button> 
          					
          					<input type="hidden" name="user" value="{{user}}"/>
          					<input type="hidden" name="id" value="{{id}}"/>

@@ -102,6 +102,12 @@
 		padding-top:10px;
 		padding-right:20px;
 	}
+	
+	.answer
+	{
+		resize:none;
+		height: 6em;
+	}
 </style>
 <title>Question</title>
 </head>
@@ -175,6 +181,9 @@
 	                                <div class="createdate">
 	                                    Created on:&nbsp;<span>{{question.date}}</span>
 	                                </div>
+	                                <div class="editdate">
+	                                    Edited on:&nbsp;<span>{{question.mdate}}</span>
+	                                </div>
 	                           	</div>
 	                        </div>
                     </div>
@@ -186,7 +195,7 @@
             	<div class="container text-right span8 ask">               
          			<div>
           				<form role="form" method="post">
-                			<textarea id="comment" name="comment" class="span8"></textarea> 
+                			<textarea id="comment" name="comment" class="span8 answer"></textarea> 
                 			<button type="submit" class="btn btn-primary">submit</button>
                 		</form>
          			</div>
@@ -227,6 +236,9 @@
 	                                </div>
 	                                <div class="createdate">
 	                                    Created on:&nbsp;<span>{{a.date}}</span>
+	                                </div>
+	                                <div class="editdate">
+	                                    Edited on:&nbsp;<span>{{a.mdate}}</span>
 	                                </div>
 	                           	</div>
 	                        </div>

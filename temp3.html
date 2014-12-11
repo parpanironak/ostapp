@@ -102,6 +102,18 @@
 		padding-top:10px;
 		padding-right:20px;
 	}
+	
+	.ask div .question
+	{
+		height: 1.5em;
+		resize: none;
+	}
+	
+	.ask div .comment
+	{
+		height: 6em;
+		resize: none;
+	}
 </style>
 <title>Question</title>
 </head>
@@ -147,7 +159,8 @@
          
          			<div id="demo" class="collapse">
           				<form role="form" method="post">
-                			<textarea id="comment" name="comment" class="span8"></textarea> 
+                			<textarea id="comment" name="comment" class="span8 question"></textarea>
+                			<textarea id="comment1" name="comment1" class="span8 comment"></textarea>  
                 			<button type="submit" class="btn btn-primary">submit</button>
                 		</form>
          			</div>
@@ -167,7 +180,7 @@
        <div class="row">
        		<div class="span8">
             	{% for q in qlist %}
-            	<div class="row entity" onclick="location.href='/quest?id={{q.key.id()}}'">
+            	<div class="row entity">
                 	<div class="span1 container vcenter">
                     	<div class="voteup text-center">
                     		<img src="./img/up.png" />
@@ -182,7 +195,7 @@
                     
             		<div class="span6">
                     		<div class="question">
-                        		<h3>{{q.qtitle}}</h3>
+                        		<a href = "/quest?id={{q.key.id()}}"><h3>{{q.qtitle}}</h3></a>
                 			</div>
                             <div class="qdetails">
                             	<p>{{q.qdetail}}</p>
@@ -190,9 +203,7 @@
                     		<div class="row">
                    				<div class = "span3">
                    					{% if not isguest and (user == q.creator) %}
-                   					<form method="post">
-                   						<button class="btn btn-primary" type="submit">Edit</button>
-                   					</form>
+                   						<button class="btn btn-primary" onclick="location.href='./edit?type=quest&id={{q.key.id()}}'">Edit</button>
                    					{% endif %}                   					
                    				</div>
 	                            <div class="text-right createinfo span3">
@@ -203,7 +214,7 @@
 	                                    Created on:&nbsp;<span>{{q.date}}</span>
 	                                </div>
 	                                <div class="editdate">
-	                                    Edited on:&nbsp;<span>17th Dec 2014</span>
+	                                    Edited on:&nbsp;<span>{{q.mdate}}</span>
 	                                </div>
 	                           	</div>
 	                       	</div>

@@ -44,9 +44,9 @@ class Question(ndb.Model):
     qdetail = ndb.StringProperty(indexed=False)
     votecount = ndb.IntegerProperty(indexed=True)
     creationdatetime = ndb.DateTimeProperty(auto_now_add=True)
+    modificationdatetime = ndb.DateTimeProperty(auto_now=True)
     date = ndb.DateProperty(auto_now_add=True)
-    time = ndb.TimeProperty(auto_now_add=True)
-
+    mdate = ndb.DateProperty(auto_now=True)
  
 class Answer(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
@@ -54,8 +54,10 @@ class Answer(ndb.Model):
     answer = ndb.StringProperty(indexed=False)
     votecount = ndb.IntegerProperty(indexed=False)
     creationdatetime = ndb.DateTimeProperty(auto_now_add=True)
+    modificationdatetime = ndb.DateTimeProperty(auto_now=True)
     date = ndb.DateProperty(auto_now_add=True)
-    time = ndb.TimeProperty(auto_now_add=True)
+    mdate = ndb.DateProperty(auto_now=True)
+
 
 class QVote(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
@@ -71,6 +73,7 @@ class Creator(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
 
 
+
 class Main(webapp2.RedirectHandler):
     
     def get(self):
@@ -83,6 +86,7 @@ class Main(webapp2.RedirectHandler):
             isguest = False
             username = user.nickname()
             url = users.create_logout_url('/')
+            
         else:
             isguest = True
             username = "guest"
@@ -113,6 +117,13 @@ class Main(webapp2.RedirectHandler):
         else:
             more=False;
         
+        for q in qlist:
+            if q.qdetail and len(q.qdetail) > 500:
+                q.qdetail = q.qdetail[:500] + "..."
+            if q.qtitle and len(q.qtitle) > 50:
+                q.qtitle = q.qtitle[:50] + "..."
+                
+        
         template_values = {
             'user' : username,
             'isguest' : isguest,
@@ -130,9 +141,10 @@ class Main(webapp2.RedirectHandler):
         
         user = users.get_current_user();
         if user:
-            self.question = Question(creator=user.nickname(), qtitle=self.request.get('comment'), votecount=0)        
-            self.question.put();
-            self.redirect(self.request.referer)
+            if self.request.get('comment'):
+                self.question = Question(creator=user.nickname(), qtitle=self.request.get('comment'), qdetail = self.request.get("comment2"),votecount=0)        
+                self.question.put();
+            self.redirect("/")
         else:
             url = users.create_login_url("/")
             self.redirect(url)
@@ -219,7 +231,7 @@ class QuestionPage(webapp2.RequestHandler):
                                  votecount=0, 
                                  qid=qid)        
             self.answer.put();
-            self.redirect(self.request.referer)
+            self.redirect(self.request.referer);
             
 class AVotePage(webapp2.RequestHandler):
     
@@ -260,7 +272,6 @@ class AVotePage(webapp2.RequestHandler):
             
         self.redirect(self.request.referer)
         
-
 class QVotePage(webapp2.RequestHandler):
     
     def get(self):
@@ -301,12 +312,13 @@ class QVotePage(webapp2.RequestHandler):
 class EditPage(webapp2.RedirectHandler):
     def get(self):
         user = users.get_current_user();
-        id = int(self.request.get('id'))
-        type = self.request.get('type')
+        id1 = int(self.request.get('id'))
+        type1 = self.request.get('type')
         
-        if user:      
-            if type == 'quest':
-                key = question_key(id);
+        if user: 
+            
+            if type1 == 'quest':
+                key = question_key(id1);
                 self.quest = key.get();
                 
                 if self.quest:
@@ -315,17 +327,19 @@ class EditPage(webapp2.RedirectHandler):
                         template_values = {
                         'user': user,
                         'validuser': True,
-                        'data': self.quest.qtitle,               
+                        'data': self.quest.qtitle,   
+                        'data2': self.quest.qdetail,            
                         'question' : self.quest,
-                        'id': id,
-                        'type': type,
+                        'id': id1,
+                        'type': type1,
+                        'cancel':self.request.referer,
                         }
                         template = JINJA_ENVIRONMENT.get_template("edit.html")
                         self.response.write(template.render(template_values))
                         
                         
-            elif type == 'ans':    
-                key = answer_key(id);
+            elif type1 == 'ans':    
+                key = answer_key(id1);
                 self.ans = key.get();
                 
                 if self.ans:
@@ -336,8 +350,8 @@ class EditPage(webapp2.RedirectHandler):
                         'validuser': True,
                         'data': self.ans.answer,               
                         'question' : self.ans,
-                        'id': id,
-                        'type': type,
+                        'id': id1,
+                        'type': type1,
                         }
                         template = JINJA_ENVIRONMENT.get_template("edit.html")
                         self.response.write(template.render(template_values))
@@ -347,31 +361,32 @@ class EditPage(webapp2.RedirectHandler):
             
     def post(self):
         user = users.get_current_user();
-        id = int(self.request.get('id'))
-        type = self.request.get('type') 
+        id1 = int(self.request.get('id1'))
+        type1 = self.request.get('type') 
         data = self.request.get('data') 
-        
+        data2 = self.request.get('data2') 
         if user:      
-            if type == 'quest':
-                key = question_key(id);
+            if type1 == 'quest':
+                key = question_key(id1);
                 self.quest = key.get();
                 
                 if self.quest:
                     if str(user) == str(self.quest.creator):
                         self.quest.qtitle = data;
+                        self.quest.qdetail = data2;
                         self.quest.put()
-                        self.redirect('./quest?id=%s' % id)
+                        self.redirect('./quest?id1=%s' % id1)
                 
                         
                         
-            elif type == 'ans':    
-                key = answer_key(id);
+            elif type1 == 'ans':    
+                key = answer_key(id1);
                 self.ans = key.get();
                 if self.ans:
                     if str(user) == str(self.ans.creator):
                         self.ans.answer = data;
                         self.ans.put()
-                        self.redirect('./quest?id=%s' % self.ans.qid)
+                        self.redirect('./quest?id1=%s' % self.ans.qid)
        
         else:
             self.redirect('/');   
