@@ -132,6 +132,26 @@
 	{
 		padding-top:10px;
 	}
+	
+	.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
 </style>
 <title>Question</title>
 </head>
@@ -172,18 +192,32 @@
        <div class="clearfix"></div>
        <div class="row">
        		<div class="span8 text-left">
-            	<div class="container text-right span8 ask">        
-         			<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#demo">Ask Question</button>
-         
+            	<div class="container span8 ask">
+            		<div class="row text-right">        
+         				<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#demo">Ask Question</button>
+         				<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#image">Upload Image</button>
+         			</div>
          			<div id="demo" class="collapse">
           				<form role="form" method="post">
+          					<label>Title</label>
                 			<textarea id="comment" name="comment" class="span8 question"></textarea>
+                			<label>Explaination</label>
                 			<textarea id="comment1" name="comment1" class="span8 comment"></textarea>  
+                			<label>Tags</label>
                 			<textarea id="comment2" name="comment2" class="span8 tags"></textarea>
                 			<button type="submit" class="btn btn-primary">submit</button>
                 		</form>
          			</div>
-         		</div>
+         			
+         			<div id="image" class="collapse">
+          				<form role="form" action = "{{uploadurl}}" method = "post" enctype="multipart/form-data">
+          					<input id="file" type="file" name="file" class="input">
+          					<br></br>
+          					<button type="submit" class="btn btn-primary">submit</button>
+                		</form>
+         			</div>
+         			
+          		</div>
             </div>
        </div>
        <div class="clearfix"></div>

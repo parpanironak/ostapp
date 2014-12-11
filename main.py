@@ -22,6 +22,8 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+DEFAULT_IMAGE_NAME = "image"
+
 def creator_key(creator_ID):
     return ndb.Key('Creator',creator_ID)
 
@@ -80,7 +82,10 @@ class AVote(ndb.Model):
 class Creator(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
 
-
+class ImageData(ndb.Model):
+    creator = ndb.StringProperty(indexed =True)
+    imgid = ndb.StringProperty()
+    date = ndb.DateTimeProperty(auto_now_add=True)
 
 class Main(webapp2.RedirectHandler):
     
@@ -90,6 +95,9 @@ class Main(webapp2.RedirectHandler):
         isguest = None
         username = None
         url = None
+        
+        uploadurl = blobstore.create_upload_url('/uploadimg')
+        
         if user:
             isguest = False
             username = user.nickname()
@@ -152,6 +160,7 @@ class Main(webapp2.RedirectHandler):
             'ismore': more,
             'isless': less,
             'less': prevlink,
+            'uploadurl':uploadurl,
         }
         template = JINJA_ENVIRONMENT.get_template("temp3.html")
         self.response.write(template.render(template_values))
@@ -160,6 +169,7 @@ class Main(webapp2.RedirectHandler):
         
         user = users.get_current_user();
         if user:
+            
             if self.request.get('comment'):
                 tags = re.compile("[\t\n,; :]+").split(self.request.get('comment2'))
                 tags2 = set()
@@ -181,6 +191,8 @@ class Main(webapp2.RedirectHandler):
                                          votecount=0,
                                          tags=tags);        
                 self.question.put();
+                
+           
             self.redirect("/")
         else:
             url = users.create_login_url("/")
@@ -245,7 +257,7 @@ class QuestionPage(webapp2.RequestHandler):
             
         link= re.compile(r'(?<!img src\=\")(https?://w*\.?(\S+)\.co\S+)')
         img = re.compile(r'(https?://\S+/(\S+)\.(jpg|jpeg|gif|png))')
-        locimg = re.compile(r'(?<!")(https?://\S+/usr_img\?img_id(\S+))')
+        locimg = re.compile(r'(?<!")(https?://\S+/usrimg\?img_id(\S+))')
             
         
         quest.qdetail = img.sub(r'<img src="\1" alt="\2">',quest.qdetail)
@@ -511,7 +523,7 @@ class TagPage(webapp2.RequestHandler):
         
         link= re.compile(r'(?<!img src\=\")(https?://w*\.?(\S+)\.co\S+)')
         img = re.compile(r'(https?://\S+/(\S+)\.(jpg|jpeg|gif|png))')
-        locimg = re.compile(r'(?<!")(https?://\S+/usr_img\?img_id(\S+))')
+        locimg = re.compile(r'(?<!")(https?://\S+/usrimg\?img_id(\S+))')
         
         for q in qlist:
             q.qdetail = img.sub(r'<img src="\1" alt="\2">',q.qdetail)
@@ -565,12 +577,37 @@ class TagPage(webapp2.RequestHandler):
         else:
             url = users.create_login_url("/")
             self.redirect(url)
+
+class GetImage(blobstore_handlers.BlobstoreDownloadHandler):
+    def get(self):
+        resource = str(self.request.get('img_id'))
+        
+        blob_info = blobstore.BlobInfo.get(resource)
+        self.response.headers['Content-Type'] = 'image/png'
+        self.send_blob(blob_info)
+
+class UploadImage(blobstore_handlers.BlobstoreUploadHandler):
+    def post(self):        
+        user = users.get_current_user()
+        upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
+        blob_info = upload_files[0]
+        
+        imagedata = ImageData(parent = creator_key(user.nickname()))
+        imagedata.creator = user.nickname()
+        imagedata.imgid = str(blob_info.key())
+        imagedata.put()
+        
+        self.redirect('/')
+ 
                     
 app = webapp2.WSGIApplication([
        ('/',Main),
        ('/quest', QuestionPage),
        ('/qvote', QVotePage),
        ('/avote', AVotePage),
+       ('/uploadimg', UploadImage),
+       ('/usrimg', GetImage),
        ('/edit', EditPage),  
-       ('/tags',TagPage),                  
+       ('/tags',TagPage),
+                         
     ], debug=True)
