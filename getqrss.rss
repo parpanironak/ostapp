@@ -1,10 +1,24 @@
 <?xml version="1.0"?>
 <rss version="2.0">
     <channel>
-
-        <item>
-            <title>roank</title>
-        </item>
-
+    	<item>
+    		<title>{{quest.qtitle}}</title>
+            <details>{{quest.qdetail | truncate(200)}}</details>
+            <link>http://{{host}}/quest?id={{quest.key.id()}}</link>
+            <createdate>{{quest.creationdatetime}}</createdate>
+            <moddate>{{quest.modificationdatetime}}</moddate>
+            <creator>{{quest.creator}}</creator>
+    		<answers>
+		        {% for a in answer %}
+			        <item>
+			        	<description>{{a.answer | truncate(200)}}</description>
+			            <createdate>{{a.creationdatetime}}</createdate>
+			            <moddate>{{a.modificationdatetime}}</moddate>
+			            <creator>{{a.creator}}</creator>
+			        </item>
+	        	{% endfor %}
+	       </answers>
+	    </item>
     </channel>
 </rss>
+

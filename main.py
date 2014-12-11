@@ -642,7 +642,11 @@ class ImagePage(webapp2.RequestHandler):
 class GetRSS(webapp2.RequestHandler):
 
     def get(self):
-        
+        if os.environ.get('HTTP_HOST'): 
+            host = os.environ['HTTP_HOST'] 
+        else: 
+            host = os.environ['SERVER_NAME']
+            
         host = self.request.host
         
         self.query = Question.query().order(-Question.creationdatetime);
@@ -662,12 +666,17 @@ class GetQRSS(webapp2.RequestHandler):
 
     def get(self):
         
+        if os.environ.get('HTTP_HOST'): 
+            host = os.environ['HTTP_HOST'] 
+        else: 
+            host = os.environ['SERVER_NAME']
+            
         host = self.request.host
         
         if self.request.get('qid'):
             key = question_key(int(self.request.get('qid')));
             quest = key.get();
-            answers = Answer.query(Answer.qid == int(self.request.get('qid'))).order(-Answer.creationdatetime)
+            answers = Answer.query(Answer.qid == quest.key.id()).order(-Answer.creationdatetime)
             answers = answers.fetch()
        
             template_values = {
@@ -679,8 +688,9 @@ class GetQRSS(webapp2.RequestHandler):
             self.response.headers['Content-Type'] = "text/xml; charset=utf-8"
             template = JINJA_ENVIRONMENT.get_template('getqrss.rss')
             self.response.write(template.render(template_values))
-            
-        self.response.write("wrong id")
+         
+        else:    
+            self.response.write("wrong id")
                     
 app = webapp2.WSGIApplication([
        ('/',Main),
