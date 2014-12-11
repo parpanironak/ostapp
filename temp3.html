@@ -66,9 +66,13 @@
 	.qdetails
 	{
 		font-size:1em;
-		min-height: 3em;
-		max-height: 3em;
-		overflow:hidden
+	}
+	
+	.qdetails img
+	{
+		max-height: 300px;
+		max-width: 300px;
+		display: block;
 	}
 	
 	.entity
@@ -213,7 +217,7 @@
                         		<a href = "/quest?id={{q.key.id()}}"><h3>{{q.qtitle}}</h3></a>
                 			</div>
                             <div class="qdetails">
-                            	<p>{{q.qdetail}}</p>
+                            	<p>{{q.qdetail|safe}}</p>
                     		</div>
                     		<div class="row">
                    				<div class = "span3">

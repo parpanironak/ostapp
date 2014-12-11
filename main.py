@@ -125,7 +125,18 @@ class Main(webapp2.RedirectHandler):
         else:
             more=False;
         
+        link= re.compile(r'(?<!img src\=\")(https?://w*\.?(\S+)\.co\S+)')
+        img = re.compile(r'(https?://\S+/(\S+)\.(jpg|jpeg|gif|png))')
+        locimg = re.compile(r'(?<!")(https?://\S+/usr_img\?img_id(\S+))')
+            
+        
+        
+        
         for q in qlist:
+            q.qdetail = img.sub(r'<img src="\1" alt="\2">',q.qdetail)
+            q.qdetail = locimg.sub(r'<img src="\1" alt="\2">',q.qdetail)      
+            q.qdetail = link.sub(r'<a href="\1">\2</a>',q.qdetail)  
+            
             if q.qdetail and len(q.qdetail) > 500:
                 q.qdetail = q.qdetail[:500] + "..."
             if q.qtitle and len(q.qtitle) > 50:
@@ -232,11 +243,27 @@ class QuestionPage(webapp2.RequestHandler):
         if user:
             username = user.nickname()
             
+        link= re.compile(r'(?<!img src\=\")(https?://w*\.?(\S+)\.co\S+)')
+        img = re.compile(r'(https?://\S+/(\S+)\.(jpg|jpeg|gif|png))')
+        locimg = re.compile(r'(?<!")(https?://\S+/usr_img\?img_id(\S+))')
+            
+        
+        quest.qdetail = img.sub(r'<img src="\1" alt="\2">',quest.qdetail)
+        quest.qdetail = locimg.sub(r'<img src="\1" alt="\2">',quest.qdetail)      
+        quest.qdetail = link.sub(r'<a href="\1">\2</a>',quest.qdetail)  
+
+           
+        for a in alist:
+            a.answer = img.sub(r'<img src="\1" alt="\2">',a.answer)
+            a.answer = locimg.sub(r'<img src="\1" alt="\2">',a.answer)      
+            a.answer = link.sub(r'<a href="\1">\2</a>',a.answer)   
+           
         template_values = {
             'user' : username,
             'isguest' : isguest,
             'url' : url,
             'question' : quest,
+            'detail':quest.qdetail.strip("\""),
             'answers' : alist,
             'more': nextlink,
             'ismore': more,
@@ -482,7 +509,14 @@ class TagPage(webapp2.RequestHandler):
         else:
             more=False;
         
+        link= re.compile(r'(?<!img src\=\")(https?://w*\.?(\S+)\.co\S+)')
+        img = re.compile(r'(https?://\S+/(\S+)\.(jpg|jpeg|gif|png))')
+        locimg = re.compile(r'(?<!")(https?://\S+/usr_img\?img_id(\S+))')
+        
         for q in qlist:
+            q.qdetail = img.sub(r'<img src="\1" alt="\2">',q.qdetail)
+            q.qdetail = locimg.sub(r'<img src="\1" alt="\2">',q.qdetail)      
+            q.qdetail = link.sub(r'<a href="\1">\2</a>',q.qdetail)  
             if q.qdetail and len(q.qdetail) > 500:
                 q.qdetail = q.qdetail[:500] + "..."
             if q.qtitle and len(q.qtitle) > 50:
