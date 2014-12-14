@@ -16,6 +16,12 @@ indexes:
   - name: creationdatetime
     direction: desc
 
+- kind: Answer
+  properties:
+  - name: qid
+  - name: votecount
+    direction: desc
+
 - kind: Question
   properties:
   - name: tags

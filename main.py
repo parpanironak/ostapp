@@ -62,7 +62,7 @@ class Answer(ndb.Model):
     creator = ndb.StringProperty(indexed=True)
     qid = ndb.IntegerProperty(indexed=True)
     answer = ndb.StringProperty(indexed=False)
-    votecount = ndb.IntegerProperty(indexed=False)
+    votecount = ndb.IntegerProperty(indexed=True)
     creationdatetime = ndb.DateTimeProperty(auto_now_add=True)
     modificationdatetime = ndb.DateTimeProperty(auto_now=True)
     date = ndb.DateProperty(auto_now_add=True)
@@ -109,7 +109,7 @@ class Main(webapp2.RedirectHandler):
             url = users.create_login_url("/")
         
         
-        self.query = Question.query().order(-Question.creationdatetime);
+        self.query = Question.query(Question.votecount >= -500000).order(-Question.votecount);
         curs = Cursor(urlsafe=self.request.get('cursor'))        
         prevcurs = self.request.get('prevcursor')        
         qlist, next_curs, more = self.query.fetch_page(10, start_cursor=curs)
@@ -229,7 +229,7 @@ class QuestionPage(webapp2.RequestHandler):
         curs = Cursor(urlsafe=self.request.get('cursor'))        
         prevcurs = self.request.get('prevcursor')    
         
-        answers = Answer.query(Answer.qid == qid).order(-Answer.creationdatetime)
+        answers = Answer.query(ndb.AND(Answer.qid == qid, Answer.votecount>=-5000000)).order(-Answer.votecount)
         alist, next_curs, more = answers.fetch_page(5, start_cursor=curs)
         
         nextlink = None        
@@ -297,6 +297,9 @@ class QuestionPage(webapp2.RequestHandler):
                                  qid=qid)        
             self.answer.put();
             self.redirect(self.request.referer);
+        else:
+            url = users.create_login_url("/")
+            self.redirect(url)
             
 class AVotePage(webapp2.RequestHandler):
     
