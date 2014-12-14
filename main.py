@@ -5,7 +5,7 @@ Created on Nov 30, 2014
 '''
 
 import os
-
+import sys
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from google.appengine.datastore.datastore_query import Cursor
@@ -16,6 +16,9 @@ from google.appengine.ext.webapp import blobstore_handlers
 import jinja2
 import webapp2
 import re
+import time
+
+mini = -sys.maxint - 1
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -109,7 +112,7 @@ class Main(webapp2.RedirectHandler):
             url = users.create_login_url("/")
         
         
-        self.query = Question.query(Question.votecount >= -500000).order(-Question.votecount);
+        self.query = Question.query(Question.votecount >= mini).order(-Question.votecount);
         curs = Cursor(urlsafe=self.request.get('cursor'))        
         prevcurs = self.request.get('prevcursor')        
         qlist, next_curs, more = self.query.fetch_page(10, start_cursor=curs)
@@ -192,7 +195,7 @@ class Main(webapp2.RedirectHandler):
                                          tags=tags);        
                 self.question.put();
                 
-           
+            time.sleep(1)
             self.redirect("/")
         else:
             url = users.create_login_url("/")
@@ -229,7 +232,7 @@ class QuestionPage(webapp2.RequestHandler):
         curs = Cursor(urlsafe=self.request.get('cursor'))        
         prevcurs = self.request.get('prevcursor')    
         
-        answers = Answer.query(ndb.AND(Answer.qid == qid, Answer.votecount>=-5000000)).order(-Answer.votecount)
+        answers = Answer.query(ndb.AND(Answer.qid == qid, Answer.votecount>=mini)).order(-Answer.votecount)
         alist, next_curs, more = answers.fetch_page(5, start_cursor=curs)
         
         nextlink = None        
@@ -296,9 +299,11 @@ class QuestionPage(webapp2.RequestHandler):
                                  votecount=0, 
                                  qid=qid)        
             self.answer.put();
+            time.sleep(1)
             self.redirect(self.request.referer);
         else:
             url = users.create_login_url("/")
+            time.sleep(1)
             self.redirect(url)
             
 class AVotePage(webapp2.RequestHandler):
@@ -337,7 +342,7 @@ class AVotePage(webapp2.RequestHandler):
                         self.ans.votecount = self.ans.votecount - 1;
                 
                 self.ans.put()
-            
+        time.sleep(1)     
         self.redirect(self.request.referer)
         
 class QVotePage(webapp2.RequestHandler):
@@ -374,8 +379,8 @@ class QVotePage(webapp2.RequestHandler):
                         self.quest.votecount = self.quest.votecount - 1;
                 
                 self.quest.put()
-            
-        self.redirect(self.request.referer)  
+        time.sleep(1)  
+        self.redirect('/')  
               
 class EditPage(webapp2.RedirectHandler):
     def get(self):
@@ -463,6 +468,7 @@ class EditPage(webapp2.RedirectHandler):
                                 t = Tag(tagvalue = tag) 
                                 t.put()
                         self.quest.put()
+                        time.sleep(1)
                         self.redirect('./quest?id=%s' % id1)
                 
                         
@@ -474,6 +480,7 @@ class EditPage(webapp2.RedirectHandler):
                     if str(user) == str(self.ans.creator):
                         self.ans.answer = data;
                         self.ans.put()
+                        time.sleep(1)
                         self.redirect('./quest?id=%s' % self.ans.qid)
        
         else:
@@ -499,7 +506,7 @@ class TagPage(webapp2.RequestHandler):
         tag = self.request.get('tag');
         
                 
-        self.query = Question.query(Question.tags == tag).order(-Question.creationdatetime);
+        self.query = Question.query(ndb.AND(Question.tags == tag,Question.votecount >=mini)).order(-Question.votecount);
         
         curs = Cursor(urlsafe=self.request.get('cursor'))        
         prevcurs = self.request.get('prevcursor')        
@@ -576,6 +583,7 @@ class TagPage(webapp2.RequestHandler):
                                          votecount=0,
                                          tags=tags);        
                 self.question.put();
+            time.sleep(1)
             self.redirect("/")
         else:
             url = users.create_login_url("/")
@@ -645,11 +653,7 @@ class ImagePage(webapp2.RequestHandler):
 class GetRSS(webapp2.RequestHandler):
 
     def get(self):
-        if os.environ.get('HTTP_HOST'): 
-            host = os.environ['HTTP_HOST'] 
-        else: 
-            host = os.environ['SERVER_NAME']
-            
+    
         host = self.request.host
         
         self.query = Question.query().order(-Question.creationdatetime);
@@ -668,12 +672,7 @@ class GetRSS(webapp2.RequestHandler):
 class GetQRSS(webapp2.RequestHandler):
 
     def get(self):
-        
-        if os.environ.get('HTTP_HOST'): 
-            host = os.environ['HTTP_HOST'] 
-        else: 
-            host = os.environ['SERVER_NAME']
-            
+                    
         host = self.request.host
         
         if self.request.get('qid'):

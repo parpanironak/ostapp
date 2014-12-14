@@ -136,6 +136,7 @@
 	p
 	{
 		text-align: justify;
+		width: 100%;
 	}
 </style>
 <title>Question</title>
@@ -156,7 +157,7 @@
                         {% if isguest %}
                             <a href = "{{url}}" >Login</a>
                         {% endif %}
-                        	|&nbsp;&nbsp; <a href="./getrss">RSS</a>
+                        	&nbsp;&nbsp;|&nbsp;&nbsp; <a href="./getrss">RSS</a>
                         </div>
 				</div>
          	</div>
@@ -223,23 +224,25 @@
             	<div class="row entity">
                 	<div class="span1 container vcenter">
                     	<div class="voteup text-center">
-                    		<img src="./img/up.png" />
+                    		<img src="./img/up.png" onclick="location.href='./qvote?id={{q.key.id()}}&vote=True'"/>
                         </div>
                         <div class="vote text-center">
                     		<h1>{{q.votecount}}</h1>
                         </div>
                         <div class="votedown text-center">
-                        	<img src="./img/down.png" />
+                        	<img src="./img/down.png" onclick="location.href='./qvote?id={{q.key.id()}}&vote=False'"/>
                     	</div>
                     </div>
                     
             		<div class="span6">
-                    		<div class="question">
-                        		<a href = "/quest?id={{q.key.id()}}"><h3>{{q.qtitle}}</h3></a>
-                			</div>
-                            <div class="qdetails">
-                            	<p>{{q.qdetail|safe}}</p>
-                    		</div>
+                    		<div class="row">
+                                <div class="question span6">
+                                    <a href = "/quest?id={{q.key.id()}}"><h3>{{q.qtitle}}</h3></a>
+                                </div>
+                                <div class="qdetails span6">
+                                    <p>{{q.qdetail|safe}}</p>
+                                </div>
+                            </div>
                     		<div class="row">
                    				<div class = "span3">
                    					{% if not isguest and (user == q.creator) %}

@@ -158,7 +158,7 @@
                         {% if isguest %}
                             <a href = "{{url}}" >Login</a>
                         {% endif %}
-                        	|&nbsp;&nbsp; <a href="./getrss">RSS</a>
+                        	&nbsp;&nbsp;|&nbsp;&nbsp; <a href="./getrss">RSS</a>
                         </div>
 				</div>
          	</div>
@@ -195,11 +195,13 @@
                     	</div>
                     </div>
             		<div class="span6">
-                    		<div class="question">
+            				<div class="row">
+                    		<div class="question span6">
                         		<h3>{{question.qtitle}}</h3>
                 			</div>
-                            <div class="qdetails">
+                            <div class="qdetails span6">
                             	<p>{{detail|safe}}</p>
+                    		</div>
                     		</div>
                     		<div class="row">
                     			<div class="span3">

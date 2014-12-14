@@ -30,6 +30,12 @@ indexes:
 
 - kind: Question
   properties:
+  - name: tags
+  - name: votecount
+    direction: desc
+
+- kind: Question
+  properties:
   - name: votecount
   - name: creationdatetime
 
