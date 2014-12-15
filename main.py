@@ -55,7 +55,7 @@ class Question(ndb.Model):
     modificationdatetime = ndb.DateTimeProperty(auto_now=True)
     date = ndb.DateProperty(auto_now_add=True)
     mdate = ndb.DateProperty(auto_now=True)
-    tags = ndb.StringProperty(repeated=True)
+    tags = ndb.StringProperty(repeated=True,indexed=True)
  
  
 class Tag(ndb.Model): 
